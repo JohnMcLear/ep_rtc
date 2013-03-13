@@ -1,0 +1,23 @@
+{
+  "name": "ep_rtc",
+  "version": "0.0.1",
+  "keywords": [
+    "peer", "connection", "realtime", "real"
+  ],
+  "description": "Allow PeerConnects between clients on the same pad",
+  "contributors": [
+    {
+      "name": "John McLear",
+      "email": "john@mclear.co.uk",
+      "url": "http://mclear.co.uk"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/johnmclear/ep_rtc.git"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}

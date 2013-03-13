@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "name": "rtc",
+      "hooks": {
+        "handleMessage": "ep_rtc/handleMessage"
+      },
+      "client_hooks": {
+        "handleClientMessage_RTC":"ep_rtc/static/js/rtc"
+      }
+    }
+  ]
+}
