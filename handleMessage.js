@@ -32,38 +32,43 @@ exports.handleMessage = function(hook_name, context, callback){
        * targetAuthorId -- The Id of the author this user wants to talk to
        * myAuthorId -- The Id of the author who is trying to talk to the targetAuthorId
     ***/
-
     if(message.action === 'request'){
       authorManager.getAuthorName(message.myAuthorId, function(er, authorName){ // Get the authorname
 
         var msg = {
           type: "COLLABROOM",
           data: {
-            type: "RTC",
-            action: "request",
+            type: "CUSTOM",
+            action: "requestRTC",
             authorId: message.myAuthorId,
             targetAuthorId: message.targetAuthorId,
             authorName: authorName,
             padId: message.padId
           }
         };
-
-        sessionManager.listSessionsOfAuthor(message.targetAuthorID, function(er, sessionID){ // Get the session ID of the author
-          padMessageHandler.handleCustomObjectMessage(msg, sessionID, function(){
-            console.warn("message send to target");
-          }); // Send a message to this session
+        var sessions = padMessageHandler.sessioninfos;
+        // TODO: Optimize me
+        Object.keys(sessions).forEach(function(key){
+          var session = sessions[key]
+          console.warn("session", session);
+          if(session.author == message.targetAuthorId){
+            padMessageHandler.handleCustomObjectMessage(msg, key, function(){
+              console.warn("message send to target", msg);
+            }); // Send a message to this session
+          }
         });
-
+ 
       });
     }
 
-    if(message.action === 'approve'){ // User has approved the invite to create a peer connection
+    if(message.action === 'approveRTC'){ // User has approved the invite to create a peer connection
       var message = context.message.data;
        
       var msg = {
-        type: "RTC",
+        type: "COLLABROOM",
         data: {
-          action: "approve",
+          type: "CUSTOM",
+          action: "approveRTC",
           authorId: message.myAuthorId,
           targetAuthorId: message.targetAuthorId
         }
@@ -75,13 +80,14 @@ exports.handleMessage = function(hook_name, context, callback){
 
     }
 
-    if(message.action === 'deny'){ // User has approved the invite to create a peer connection
+    if(message.action === 'denyRTC'){ // User has approved the invite to create a peer connection
       var message = context.message.data;
 
       var msg = {
-        type: "RTC",
+        type: "COLLABROOM",
         data: {
-          action: "approve",
+          type: "CUSTOM",
+          action: "denyRTC",
           authorId: message.myAuthorId,
           targetAuthorId: message.targetAuthorId 
         }
@@ -92,6 +98,10 @@ exports.handleMessage = function(hook_name, context, callback){
 
 
   }
-  callback();
+  if(isRtcMessage === true){
+    callback([null]);
+  }else{
+    callback(true);
+  }
 }
 
