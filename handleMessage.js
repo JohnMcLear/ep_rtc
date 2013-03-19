@@ -50,10 +50,9 @@ exports.handleMessage = function(hook_name, context, callback){
         // TODO: Optimize me
         Object.keys(sessions).forEach(function(key){
           var session = sessions[key]
-          console.warn("session", session);
           if(session.author == message.targetAuthorId){
             padMessageHandler.handleCustomObjectMessage(msg, key, function(){
-              console.warn("message send to target", msg);
+              // TODO: Error handling
             }); // Send a message to this session
           }
         });
