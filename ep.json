@@ -3,10 +3,14 @@
     {
       "name": "rtc",
       "hooks": {
-        "handleMessage": "ep_rtc/handleMessage"
+        "handleMessage": "ep_rtc/handleMessage",
+        "eejsBlock_mySettings": "ep_rtc/rtc",
+        "eejsBlock_scripts": "ep_rtc/rtc",
+        "eejsBlock_styles": "ep_rtc/rtc"
       },
       "client_hooks": {
-        "handleClientMessage_RTC":"ep_rtc/static/js/rtc"
+        "postAceInit": "ep_rtc/static/js/postAceInit:postAceInit",
+        "handleClientMessage_CUSTOM":"ep_rtc/static/js/rtc"
       }
     }
   ]
