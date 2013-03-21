@@ -4,7 +4,7 @@
 * 
 * How the signaling works.
 * Client A asks the Server to send Client B a message to begin Peer connection
-* Client B generates SDP information
+* Client B generates SDP information (Ice candidate information)
 * Client B asks the Server to the SDP information to Client A
 *
 *
@@ -14,13 +14,50 @@
 if(typeof exports == 'undefined'){
     var exports = this['mymodule'] = {};
 }
-var PeerConnection = window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozPeerConnection;
-var URL = window.URL || window.webkitURL || window.msURL || window.oURL;
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-var connection = new PeerConnection({iceServers: [{ url: 'stun:stun.l.google.com:19302' }]});
+var connection = null;
+
+try{
+  connection = new mozRTCPeerConnection(iceServers);
+}catch(e){
+  connection = new webkitRTCPeerConnection(iceServers);
+}
+
+connection.onicecandidate = function(e) { // Fired by connection.setLocalDescription
+  console.log("ONICECANDIDATE", e);
+  if(e.candidate) {
+    candidateInfo = true;
+    console.log("ICE candidate" , e);
+    var message = {
+      type : 'RTC',
+      action: 'candidateRTC',
+      targetAuthorId : myAuthorId, // make sure this RTC message always targets a specific author..
+      label: e.candidate.sdpMLineIndex,
+      id: e.candidate.sdpMid,
+      candidate: e.candidate.candidate
+     }
+    console.log("candidate SENT", message);
+    pad.collabClient.sendMessage(message);
+  }
+}
+
+// Wire up the video stream once we get it
+connection.onaddstream = function(event) {
+  console.log("onaddstream", e);
+  video.src = URL.createObjectURL(event.stream)
+}
+console.log("THIS connection is ", connection);
+
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+//navigator.getUserMedia = navigator.mozGetUserMedia;
+
+var iceServers = {iceServers: [{ url: 'stun:stun.l.google.com:19302' }]};
+var myAuthorId, targetAuthorId; // HACKY to be resolved in refactor..
+var candidateInfo = false;
+// Try out new ice candidates
 
 exports.handleClientMessage_CUSTOM = function(hook, context, wut){
-  console.log(context);
+  console.log("new message from server", context);
   var action = context.payload.action;
   if(action === "requestRTC"){ // someone has requested we approve their rtc request -- we recieved an offer
     var acceptIt = "<form style='margin-top:10px' class='ep_rtc_form'><input type=button style='padding:10px;' class='ep_rtc_accept' value='Accept'><input type=button class='ep_rtc_decline' value='Decline' style='padding:10px;' ></form>";
@@ -31,59 +68,119 @@ exports.handleClientMessage_CUSTOM = function(hook, context, wut){
       time: 20000,
       after_open: function(e){
 
+    $('.ep_rtc_accept').click(function(){
+      acceptReq(e);
+      $(e).hide();
+      return false;
+    });
+    $('.ep_rtc_decline').click(function(){
+      declineReq(e);
+      $(e).hide();
+      return false;
+    });
+
+
         e.padId = context.payload.padId;
         e.targetAuthorId = context.payload.targetAuthorId;
+        targetAuthorId = e.targetAuthorId; // Horrible Global value
         e.myAuthorId = context.payload.authorId;
-
-        $('.ep_rtc_accept').click(function(){
-          $(e).hide();
-          acceptReq(e);
-          return false;
-        });
-        $('.ep_rtc_decline').click(function(){
-          $(e).hide();
-          declineReq(e);
-          return false;
-        });
       }
     });
   }
   if(action === "candidateRTC"){ // Someone sent us their candidate information :)
-//    if(event.candidate) {
-//      server.send({
-//        type: 'candidate',
-//        label: event.candidate.spdMLineIndex,
-//        id: event.candidate.sdpMid,
-//        candidate: event.candidate.candidate
-//      })
-//    }    
-   var message = {
-      type : 'RTC',
-      action : 'candidateRTC',
-      label: context.payload.candidate.spdMLineIndex,
-      id: context.payload.candidate.sdpMid,
-      candidate: context.payload.candidate.candidate
-    }
-    console.log("SENT cadidate", message);
-    pad.collabClient.sendMessage(message);
-
+    console.log("Recieved candidate", context);
+    connection.addIceCandidate(new RTCIceCandidate({
+      sdpMLineIndex: context.payload.label,
+      candidate: context.payload.candidate
+    }))
+    // Reply with our candidate details..
+//    console.log("event senntntt", event);
+//    var message = {
+//      type : 'RTC',
+//      action: 'candidateRTC',
+//      targetAuthorId : targetAuthorId, // make sure this RTC message always targets a specific author..
+//      label: event.candidate.spdMLineIndex,
+//      id: event.candidate.sdpMid,
+//      candidate: event.candidate.candidate
+//    }
+//    console.log("candidate SENT", message);
+//    pad.collabClient.sendMessage(message);
+    
+    // connection.onicecandidate(context.payload);
   }
+
   if(action === "approveRTC"){ // Someone approved of our RTC request
-    connection.setRemoteDescription(new RTCSessionDescription(context.payload))
+    console.log("Recieved Approved RTC, setting remote description:", context.payload);
+
+    // SDP is wrong here..
+
+    connection.setRemoteDescription(new RTCSessionDescription(context.payload.SDP));
+    console.log("ANSWER SENT");
+    connection.createAnswer(function(sessionDescription){
+      console.log("sessionDES2", sessionDescription);
+      connection.setLocalDescription(sessionDescription);
+      myAuthorId = context.payload.authorId;
+      console.log("sending answer have available", context);
+      console.log("I need to send this to", myAuthorId ,sessionDescription);
+      var message = {
+        type : 'RTC',
+        action: 'SDPRTC',
+        myAuthorId : context.payload.targetAuthorId,
+        targetAuthorId : myAuthorId, // make sure this RTC message always targets a specific author..
+        SDP: sessionDescription
+      }
+      console.log("SDPRTC SENT", message);
+      pad.collabClient.sendMessage(message);
+    })
+
   } 
   if(action === "declineRTC"){ // someone declined our RTC request
     
   }
+
+  // This is the same as approveRTC..  WTF?
   if(action === "SDPRTC"){ // someone sent us their SDP details
-    console.log(context.payload);
+    console.log("We got SDP Details from a client", context.payload);
     connection.setRemoteDescription(new RTCSessionDescription(context.payload.SDP))
   }
+
+}
+
+function requestPerms(){
+  // Ask for access to the video and audio devices
+//  try{ // Again this is fucking lazy ass developing..
+//    navigator.getUserMedia({
+//      audio: true,
+//      video: true
+//    }, onUserMediaSuccess, null);
+//  }catch(e){
+  navigator.getUserMedia({
+    audio: true,
+    video: true
+    }, 
+    function(stream){
+      console.log(stream);
+      connection.addStream(stream);
+      video.src = URL.createObjectURL(stream);
+    }, 
+    null
+  );
+}
+
+function onUserMediaSuccess(stream) {
+  console.log(stream);
+  connection.addStream(stream);
+  video.src = URL.createObjectURL(stream)
+  // openConnection()
 }
 
 function acceptReq(e){ // Accept connection and Share RTC information with whoever requested..
   console.log("Creating peer connection from Client B to Client A", e);
   connection.createOffer(function(sessionDescription){
-    connection.setLocalDescription(sessionDescription)
+    myAuthorId = e.myAuthorId; // Another horrible Global value
+    connection.setLocalDescription(sessionDescription); // I FIRE THE ICE CANDIDATE!
+
+    // Send my session information
     var message = {
       'type' : 'RTC',
       'action' : 'SDPRTC',
@@ -91,22 +188,23 @@ function acceptReq(e){ // Accept connection and Share RTC information with whoev
       'SDP' : sessionDescription
     }
     console.log("OFFER SENT", message);
-    pad.collabClient.sendMessage(message);
-  })
 
-/*  connection.setRemoteDescription(new RTCSessionDescription(message));
-  connection.createAnswer(function(sessionDescription){
-    connection.setLocalDescription(sessionDescription)
+    pad.collabClient.sendMessage(message);
+
+    // And send an approval
     var message = {
       'type' : 'RTC',
-      'action' : 'SDPRTC',
+      'action' : 'approveRTC',
+      'myAuthorId' : e.targetAuthorId,
       'targetAuthorId' : e.myAuthorId,
       'SDP' : sessionDescription
     }
+    console.log("ACCEPT RTC SENT", message);
     pad.collabClient.sendMessage(message);
-  });
-*/
-//  createPeerConnection();
+
+    requestPerms();
+    video_chat.displayVideoChat();
+  })
 }
 function declineReq(e){ // Deny an RTC request
   // Create a message to send to the server
@@ -216,6 +314,9 @@ var video_chat = {
     }
 
     pad.collabClient.sendMessage(message);  // Send the request through the server to create a tunnel to the client
+    requestPerms();
+    this.displayVideoChat();
+    padeditbar.toggleDropDown();
   },
 
   /****
@@ -241,7 +342,6 @@ var video_chat = {
       }
     };
     var isVideoMuted = false;
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia || navig$
     window.URL = window.URL || window.webkitURL;
   },
 
@@ -250,15 +350,17 @@ var video_chat = {
   *****/
   displayVideoChat: function(){
     chat.stickToScreen(true);
-    $('#chattext').css({'top':'200px'});
+    $('#chattext').css({'top':'300px'});
   },
 
   /****
   * Begin initiating events to prepare the DOM for Video chat support
   *****/
   init: function(){
+
     this.listeners();
-    $('body').append('    <video id="video" autoplay="autoplay"></video> '); // TODO LULWUT
+//    $('#chattext').insertBefore('<video id="video" autoplay="autoplay"></video> '); // TODO LULWUT
+    $('<video id="video" style="margin-top:10px;" width="100%" autoplay="autoplay"></video>').insertBefore('#chattext');
   },
 
   /****
