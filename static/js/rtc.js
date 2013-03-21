@@ -11,15 +11,19 @@
 *
 *****/
 
+
 if(typeof exports == 'undefined'){
     var exports = this['mymodule'] = {};
 }
 var connection = null;
 
-try{
+if (navigator.mozGetUserMedia) {
   connection = new mozRTCPeerConnection(iceServers);
-}catch(e){
+  RTCSessionDescription = mozRTCSessionDescription;
+  getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+} else if (navigator.webkitGetUserMedia) {
   connection = new webkitRTCPeerConnection(iceServers);
+  getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
 }
 
 connection.onicecandidate = function(e) { // Fired by connection.setLocalDescription
@@ -45,8 +49,6 @@ connection.onaddstream = function(event) {
   console.log("onaddstream", e);
   video.src = URL.createObjectURL(event.stream)
 }
-
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 var iceServers = {iceServers: [{ url: 'stun:stun.l.google.com:19302' }]}; // TODO don't use Google's servers
 var myAuthorId, targetAuthorId; // HACKY to be resolved in refactor..
@@ -138,7 +140,14 @@ exports.handleClientMessage_CUSTOM = function(hook, context, wut){
 }
 
 function requestPerms(){ // Ask for access to the video and audio devices
-  navigator.getUserMedia({
+    // Attach a media stream to an element.
+    var element = document.getElementById("video");
+    console.log(element);
+    attachMediaStream = function(element, stream) {
+        element.mozSrcObject = stream;
+        element.play();
+    };
+/*  navigator.getUserMedia({
     audio: true,
     video: true
     }, 
@@ -149,6 +158,17 @@ function requestPerms(){ // Ask for access to the video and audio devices
     }, 
     null
   );
+*/
+  getUserMedia({audio: true, video: {
+    mandatory: {},
+    optional: []
+  }}, function (stream) {
+    attachMediaStream(element || self.getLocalVideoContainer(), stream);
+    self.localStream = stream;
+    self.testReadiness();
+  }, function () {
+    throw new Error('Failed to get access to local media.');
+  });
 }
 
 function onUserMediaSuccess(stream){ // Once we have a good video or audio stream
@@ -205,6 +225,11 @@ function decline(){
 }
 
 
+function testReadiness() {
+  if (this.localStream && this.sessionReady) {
+    this.emit('readyToCall', this.connection.socket.sessionid);
+  }
+};
 
 var video_chat = {
 
