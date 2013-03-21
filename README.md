@@ -1,8 +1,12 @@
 # ep_rtc
 
-Adds RTC to etherpad so users can do PeerConnection and other RTC goodness.
+Native video and audio chat in Etherpad without any plugins
 
-<img src="http://RTC" alt="RTC">
+## How to use
+
+* Click the authorlist icon in the top right corner
+* Click on an Author
+* Click on the Video call Icon
 
 ## Set as disabled by default
 

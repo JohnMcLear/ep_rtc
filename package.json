@@ -4,7 +4,7 @@
   "keywords": [
     "peer", "connection", "realtime", "real"
   ],
-  "description": "Allow PeerConnects between clients on the same pad",
+  "description": "Video chat without plugins powered by WebRTC -- Works in Firefox, Chrome and Chrome Frame",
   "contributors": [
     {
       "name": "John McLear",

@@ -1,15 +1,12 @@
 /***
 *
-* Responsible for negotiating messages between clients to create peer connections
+* Responsible for negotiating messages between two clients
 *
 ****/
 
 var authorManager = require("../../src/node/db/AuthorManager"),
 padMessageHandler = require("../../src/node/handler/PadMessageHandler"),
             async = require('../../src/node_modules/async'),
-   sessionManager = require("../../src/node/db/SessionManager");
-
-// var socketio = padMessageHandler.setSocketIO; // I really don't want this here but oh well..
 
 /* 
 * Handle incoming messages from clients
@@ -38,7 +35,7 @@ exports.handleMessage = function(hook_name, context, callback){
   var message = context.message.data;
   /***
     What's available in a message?
-     * action -- The action IE request, accept... TODO
+     * action -- The action IE request, accept
      * padId -- The padId of the pad both authors are on
      * targetAuthorId -- The Id of the author this user wants to talk to
      * myAuthorId -- The Id of the author who is trying to talk to the targetAuthorId
@@ -62,65 +59,6 @@ exports.handleMessage = function(hook_name, context, callback){
         sendToTarget(message, msg);
       });
     }
-
-    if(message.action === 'candidateRTC'){ // User has approved the invite to create a peer connection
-      var message = context.message.data;
-      console.warn("CANDIDATE", message);
-      var msg = {
-        type: "COLLABROOM",
-        data: {
-          type: "CUSTOM",
-          payload: {
-            action: "candidateRTC",
-            id: message.id,
-            label: message.label,
-            candidate: message.candidate,
-//            authorId: message.myAuthorId,
-            targetAuthorId: message.targetAuthorId,
-            padId: message.padId
-          }
-        }
-      };
-      console.warn("sending", msg);
-      sendToTarget(message, msg);
-    }
-
-    if(message.action === 'SDPRTC'){
-      var msg = {
-        type: "COLLABROOM",
-        data: {
-          type: "CUSTOM",
-          payload: {
-            action: "SDPRTC",
-            SDP: message.SDP,
-            authorId: message.myAuthorId,
-            targetAuthorId: message.targetAuthorId,
-            padId: message.padId
-          }
-        }
-      };
-      // console.warn("THIS SDPRTC", msg);
-      sendToTarget(message, msg);
-    }
-
-    if(message.action === 'approveRTC'){ // User has approved the invite to create a peer connection
-      var message = context.message.data;
-      var msg = {
-        type: "COLLABROOM",
-        data: {
-          type: "CUSTOM",
-          payload: {
-            action: "approveRTC",
-            authorId: message.myAuthorId,
-            targetAuthorId: message.targetAuthorId,
-            padId: message.padId,
-            SDP: message.SDP
-          }
-        }
-      };
-      // console.warn("Sent ", msg, "to", message.targetAuthorId);
-      sendToTarget(message, msg);
-    } 
 
     if(message.action === 'declineRTC'){ // User has approved the invite to create a peer connection
       var message = context.message.data;
