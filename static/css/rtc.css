@@ -32,7 +32,8 @@
   position:absolute;
   width:40%;
   top:30px;
-  right:10px;
+  right:0px;
+  z-index:1;
 }
 #localVideo video:hover{
   width:100%;
