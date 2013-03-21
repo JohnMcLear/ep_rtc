@@ -28,3 +28,31 @@
   opacity:1;
 }
 
+#localVideo video{
+  position:absolute;
+  width:40%;
+  top:30px;
+  right:10px;
+}
+#localVideo video:hover{
+  width:100%;
+  right:0px;
+}
+
+
+#remotesVideos video{
+  position:absolute;
+  max-width:100%;
+  top:30px;
+  left:0px;
+}
+
+.ep_rtc_form{
+  margin-top:10px;
+}
+.ep_rtc_form input{
+  padding:10px;
+}
+.ep_rtc_form button{
+  padding:10px;
+}
