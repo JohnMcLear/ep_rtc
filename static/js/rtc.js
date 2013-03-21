@@ -23,6 +23,7 @@ if (navigator.mozGetUserMedia) {
   getUserMedia = navigator.mozGetUserMedia.bind(navigator);
 } else if (navigator.webkitGetUserMedia) {
   connection = new webkitRTCPeerConnection(iceServers);
+  RTCSessionDescription = navigator.webkitRTCSessionDescription;
   getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
 }
 
@@ -147,6 +148,7 @@ function requestPerms(){ // Ask for access to the video and audio devices
         element.mozSrcObject = stream;
         element.play();
     };
+
 /*  navigator.getUserMedia({
     audio: true,
     video: true
@@ -159,11 +161,15 @@ function requestPerms(){ // Ask for access to the video and audio devices
     null
   );
 */
+
   getUserMedia({audio: true, video: {
     mandatory: {},
     optional: []
   }}, function (stream) {
     attachMediaStream(element || self.getLocalVideoContainer(), stream);
+    if (navigator.webkitGetUserMedia) {
+      video.src = URL.createObjectURL(stream);
+    }
     self.localStream = stream;
     self.testReadiness();
   }, function () {
