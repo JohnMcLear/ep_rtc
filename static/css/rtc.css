@@ -35,6 +35,13 @@
   width:100%;
   right:0px;
 }
+#remotesVideos img{
+  width:100%;
+  position:absolute;
+  left:0px;
+  top:30px;
+}
+
 #remotesVideos video{
   position:absolute;
   max-width:100%;

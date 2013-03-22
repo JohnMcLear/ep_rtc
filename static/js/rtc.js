@@ -85,7 +85,8 @@ var etherpadRTC = {
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true,
-      media: {audio:true, video: true}
+      media: {audio:true, video: true},
+      progressIndicator: "../static/plugins/ep_rtc/static/img/progress.gif"
     });
     var padId = pad.getPadId();
     exports.webrtc.on('readyToCall', function () {
