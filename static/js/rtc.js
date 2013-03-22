@@ -92,9 +92,8 @@ var etherpadRTC = {
       iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
     });
 
-/* TO DO extend this into getLocalVideoContainer
     // extend the webRTC object functionality
-    exports.webrtc.getLocalVideoContainerDisplay = function(){
+    exports.webrtc.on('ready', function () {
       $('#permissionHelper').show();
       $('#progressIndicator').show();
       $('#hangUp').show();
@@ -102,14 +101,14 @@ var etherpadRTC = {
         $('#hangUp').hide();
         exports.webrtc.hangUp();
       });
-    };
-*/
+    });
 
     exports.webrtc.hangUp = function(){
       $('#hangUp').hide();
     }
     exports.webrtc.on('readyToCall', function () {
       $('#permissionHelper').hide();
+      $('#progressIndicator').hide();
       exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
     });
   },
