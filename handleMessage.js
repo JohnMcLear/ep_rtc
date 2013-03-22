@@ -6,7 +6,7 @@
 
 var authorManager = require("../../src/node/db/AuthorManager"),
 padMessageHandler = require("../../src/node/handler/PadMessageHandler"),
-            async = require('../../src/node_modules/async'),
+            async = require('../../src/node_modules/async');
 
 /* 
 * Handle incoming messages from clients
