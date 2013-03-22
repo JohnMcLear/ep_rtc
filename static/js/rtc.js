@@ -81,23 +81,35 @@ var etherpadRTC = {
   * Enable the RTC constructor
   *****/
   createRTC: function(targetAuthorId){
-    exports.webrtc = new WebRTC({
+
+    var padId = pad.getPadId();
+
+    exports.webrtc = new WebRTC({ // create the new webRTC object
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true,
       media: {audio:true, video: true},
       iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
     });
-    exports.webrtc.getLocalVideoContainer = function(){
+
+/* TO DO extend this into getLocalVideoContainer
+    // extend the webRTC object functionality
+    exports.webrtc.getLocalVideoContainerDisplay = function(){
+      $('#permissionHelper').show();
       $('#progressIndicator').show();
       $('#hangUp').show();
       $('#hangUp').click(function(){
         $('#hangUp').hide();
         exports.webrtc.hangUp();
       });
+    };
+*/
+
+    exports.webrtc.hangUp = function(){
+      $('#hangUp').hide();
     }
-    var padId = pad.getPadId();
     exports.webrtc.on('readyToCall', function () {
+      $('#permissionHelper').hide();
       exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
     });
   },
