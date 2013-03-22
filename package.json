@@ -1,10 +1,10 @@
 {
   "name": "ep_rtc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
-    "peer", "connection", "realtime", "real"
+    "video", "audio", "chat", "web", "conference", "peer", "connection", "realtime", "real"
   ],
-  "description": "Video chat without plugins powered by WebRTC -- Works in Firefox, Chrome and Chrome Frame",
+  "description": "Video and audio chat without plugins powered by WebRTC -- Works in Firefox, Chrome and Chrome Frame",
   "contributors": [
     {
       "name": "John McLear",
