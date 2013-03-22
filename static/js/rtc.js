@@ -86,7 +86,7 @@ var etherpadRTC = {
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true,
       media: {audio:true, video: true},
-      progressIndicator: "../static/plugins/ep_rtc/static/img/progress.gif"
+      iceServers: iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
     });
     var padId = pad.getPadId();
     exports.webrtc.on('readyToCall', function () {
