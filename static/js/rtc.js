@@ -81,16 +81,15 @@ var etherpadRTC = {
   * Enable the RTC constructor
   *****/
   createRTC: function(targetAuthorId){
-    var webrtc = new WebRTC({
+    exports.webrtc = new WebRTC({
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
-      autoRequestMedia: true
-//      type: {audio:true, video:true, filesharing:false, screensharing: true}
-//      type: {video: false, audio:true}
+      autoRequestMedia: true,
+      media: {audio:true, video: false}
     });
     var padId = pad.getPadId();
-    webrtc.on('readyToCall', function () {
-      webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
+    exports.webrtc.on('readyToCall', function () {
+      exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
     });
   },
 
