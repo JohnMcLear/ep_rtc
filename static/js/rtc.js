@@ -48,7 +48,7 @@ var etherpadRTC = {
   init: function(){
     this.listeners();
     if ($('#localVideo').length === 0){
-      $('<div id="localVideo"></div><div id="remotesVideos"></div>').insertBefore('#chattext');
+      $('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div>').insertBefore('#chattext');
     }
   },
 
@@ -85,11 +85,16 @@ var etherpadRTC = {
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true,
-      media: {audio:true, video: false}
+      media: {audio:true, video: true}
     });
     var padId = pad.getPadId();
     exports.webrtc.on('readyToCall', function () {
       exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
+    });
+    $('#hangUp').show();
+    $('#hangUp').click(function(){
+      $('#hangUp').hide();
+      exports.webrtc.hangUp();
     });
   },
 
