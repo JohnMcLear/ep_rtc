@@ -73,7 +73,7 @@
 }
 
 #progressIndicator{
-  background-image: url("/static/plugins/ep_rtc/static/img/progress.gif");
+  background-image: url("/static/img/loading.gif");
   width:100%;
   position:absolute;
   top:30px;
