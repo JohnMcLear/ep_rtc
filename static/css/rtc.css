@@ -3,14 +3,14 @@
 * 
 */
 .videoCall{
-  background-image: url("http://www.intel.com/content/dam/image/Icons/Page_Types/Video-Content-Library-icon-64x64.png");
+  background-image: url("/static/plugins/ep_rtc/static/img/call.gif");
   background-size: 26px;
   background-repeat: no-repeat;
   height:26px;
   width: 24px;
 }
 .audioCall{
-  background-image: url("http://mac2.microsoft.com/help/GetOpenContent.aspx?assetid=a8832db2-afaf-474a-abdc-92dfbc2f3378&locale=en-us&product=office&version=14");
+  background-image: url("/static/plugins/ep_rtc/static/img/call.gif");
   background-position-y:2px;
   background-repeat: no-repeat;
   background-size: 26px;
@@ -71,6 +71,18 @@
   top:50px;
   z-index:4;
 }
+
+#progressIndicator{
+  background-image: url("/static/plugins/ep_rtc/static/img/progress.gif");
+  width:100%;
+  position:absolute;
+  top:30px;
+  left:0px;
+  height:100px;
+  background-repeat: no-repeat;
+  background-size:100%;
+}
+
 
 .ep_rtc_form{
   margin-top:10px;

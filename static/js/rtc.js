@@ -48,7 +48,7 @@ var etherpadRTC = {
   init: function(){
     this.listeners();
     if ($('#localVideo').length === 0){
-      $('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div>').insertBefore('#chattext');
+      $('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div><div id="progressIndicator"></div>').insertBefore('#chattext');
     }
   },
 
@@ -86,16 +86,19 @@ var etherpadRTC = {
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true,
       media: {audio:true, video: true},
-      iceServers: iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
+      iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
     });
+    exports.webrtc.getLocalVideoContainer = function(){
+      $('#progressIndicator').show();
+      $('#hangUp').show();
+      $('#hangUp').click(function(){
+        $('#hangUp').hide();
+        exports.webrtc.hangUp();
+      });
+    }
     var padId = pad.getPadId();
     exports.webrtc.on('readyToCall', function () {
       exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
-    });
-    $('#hangUp').show();
-    $('#hangUp').click(function(){
-      $('#hangUp').hide();
-      exports.webrtc.hangUp();
     });
   },
 
