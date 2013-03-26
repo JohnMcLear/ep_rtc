@@ -1,6 +1,6 @@
 /****
 *
-* Handled by the client -- Mostly manages signaling and creating connections between clients.  
+* Handled by the client - Mostly manages signaling and creating connections between clients.  
 * Talks to handleMessage.js on the server
 * 
 * How the signaling works.
@@ -28,7 +28,7 @@ exports.handleClientMessage_CUSTOM = function(hook, context, wut){
   var targetAuthorId = context.payload.targetAuthorId;
   var myAuthorId = context.payload.authorId;
 
-  if(action === 'requestRTC'){ // someone has requested we approve their rtc request -- we recieved an offer
+  if(action === 'requestRTC'){ // someone has requested we approve their rtc request - we recieved an offer
     var authorName = escape(context.payload.authorName);
     var acceptIt = "<form class='ep_rtc_form'><input type=button class='#ep_rtc_accept' data-targetAuthorId='"+targetAuthorId+"' data-padId='"+padId+"' data-myAuthorId='"+myAuthorId+"' value='Accept' onClick='etherpadRTC.acceptReq(this);'><input type=button class='#ep_rtc_decline' value='Decline' onClick='etherpadRTC.declineReq(this)'></form>";
     $.gritter.add({
@@ -101,6 +101,9 @@ webrtc.on('readyToCall', function () {
   createRTC: function(targetAuthorId){
 
     var padId = pad.getPadId();
+    var roomId = padId + "--EP--" + targetAuthorId;
+    roomId = encodeURIComponent(roomId);
+    
     exports.webrtc = new WebRTC({ // create the new webRTC object
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
@@ -127,7 +130,7 @@ webrtc.on('readyToCall', function () {
     exports.webrtc.on('readyToCall', function () {
       $('#permissionHelper').hide();
       $('#progressIndicator').hide();
-      exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId); 
+      exports.webrtc.joinRoom(roomId); 
     });
   },
 
