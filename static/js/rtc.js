@@ -46,28 +46,10 @@ var etherpadRTC = {
   * Begin initiating events to prepare the DOM for Video chat support
   *****/
   init: function(){
-
-/*
-var webrtc = new WebRTC({
-    // the id/element dom element that will hold "our" video
-    localVideoEl: 'localVideo',
-    // the id/element dom element that will hold remote videos
-    remoteVideosEl: 'remotesVideos',
-    // immediately ask for camera access
-    autoRequestMedia: true
-});
-
-webrtc.on('readyToCall', function () {
-    // you can name it anything
-    webrtc.joinRoom('ed');
-});
-*/
     this.listeners();
-    chat.stickToScreen(true);
     if ($('#localVideo').length === 0){
       $('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div><div id="progressIndicator"></div>').insertBefore('#chattext');
     }
-    //  $(chattext).html('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div><div id="progressIndicator"></div>');
   },
 
   /****
