@@ -2,7 +2,15 @@
   "name": "ep_rtc",
   "version": "0.1.1",
   "keywords": [
-    "video", "audio", "chat", "web", "conference", "peer", "connection", "realtime", "real"
+    "video",
+    "audio",
+    "chat",
+    "web",
+    "conference",
+    "peer",
+    "connection",
+    "realtime",
+    "real"
   ],
   "description": "Video and audio chat without plugins powered by WebRTC -- Works in Firefox, Chrome and Chrome Frame",
   "contributors": [

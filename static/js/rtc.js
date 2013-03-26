@@ -46,10 +46,28 @@ var etherpadRTC = {
   * Begin initiating events to prepare the DOM for Video chat support
   *****/
   init: function(){
+
+/*
+var webrtc = new WebRTC({
+    // the id/element dom element that will hold "our" video
+    localVideoEl: 'localVideo',
+    // the id/element dom element that will hold remote videos
+    remoteVideosEl: 'remotesVideos',
+    // immediately ask for camera access
+    autoRequestMedia: true
+});
+
+webrtc.on('readyToCall', function () {
+    // you can name it anything
+    webrtc.joinRoom('ed');
+});
+*/
     this.listeners();
+    chat.stickToScreen(true);
     if ($('#localVideo').length === 0){
       $('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div><div id="progressIndicator"></div>').insertBefore('#chattext');
     }
+    //  $(chattext).html('<div id="localVideo"></div><div id="remotesVideos"></div><div id="hangUp">End Call</div><div id="progressIndicator"></div>');
   },
 
   /****
@@ -83,14 +101,14 @@ var etherpadRTC = {
   createRTC: function(targetAuthorId){
 
     var padId = pad.getPadId();
-
     exports.webrtc = new WebRTC({ // create the new webRTC object
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
-      autoRequestMedia: true,
-      media: {audio:true, video: true},
-      iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
+      autoRequestMedia: true
     });
+//      media: {audio:true, video: true}
+//       iceServers: {"iceServers":[{"url":"stun:stun.stunprotocol.org"}]}
+
 
     // extend the webRTC object functionality
     exports.webrtc.on('ready', function () {
@@ -109,7 +127,7 @@ var etherpadRTC = {
     exports.webrtc.on('readyToCall', function () {
       $('#permissionHelper').hide();
       $('#progressIndicator').hide();
-      exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId);
+      exports.webrtc.joinRoom(padId + "--EP--" + targetAuthorId); 
     });
   },
 
@@ -167,7 +185,7 @@ var etherpadRTC = {
     var request = {
       padId: padId,
       myAuthorId: myAuthorId,
-      taregtAuthorId: targetAuthorId
+      targetAuthorId: targetAuthorId
     }
     $.gritter.removeAll;  // TODO only remove invite.
     etherpadRTC.displayVideoChat(); // update the UI to reflect the changes
