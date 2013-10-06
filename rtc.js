@@ -22,5 +22,5 @@ exports.eejsBlock_styles = function (hook_name, args, cb)
 
 exports.eejsBlock_scripts = function (hook_name, args, cb)
 {
-  args.content = '<script src="http://simplewebrtc.com/latest.js"></script><script src="../static/plugins/ep_rtc/static/js/rtc.js">' + args.content;
+  args.content = '<script src="http://simplewebrtc.com/latest.js"></script><script src="../static/plugins/ep_rtc/static/js/rtc.js"></script>' + args.content;
 }

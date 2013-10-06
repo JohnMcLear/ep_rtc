@@ -61,11 +61,13 @@
   width:100%;
   display:none;
   white-space:nowrap;
-  font-size:51px;
+  font-size:20px;
   color:#fff;
+  text-align:right;
 }
 
 #hangUp:hover{
+  font-size:40px;
   opacity:1;
   height:100px;
   top:50px;
