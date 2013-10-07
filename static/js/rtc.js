@@ -86,7 +86,7 @@ var etherpadRTC = {
     var roomId = padId + "--EP--" + targetAuthorId;
     roomId = encodeURIComponent(roomId);
     
-    exports.webrtc = new WebRTC({ // create the new webRTC object
+    exports.webrtc = new SimpleWebRTC({ // create the new webRTC object
       localVideoEl: 'localVideo',
       remoteVideosEl: 'remotesVideos',
       autoRequestMedia: true
